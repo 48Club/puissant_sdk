@@ -16,7 +16,7 @@ import (
 func main() {
 	conf := demo.GetConf("config.yaml")
 
-	client, err := bnb48.Dial("https://testnet-fonce-bsc.bnb48.club", "https://testnet-fonce-bsc.bnb48.club")
+	client, err := bnb48.Dial("https://testnet-fonce-bsc.bnb48.club", "https://testnet-puissant-bsc.bnb48.club")
 	if err != nil {
 		log.Panicln(err.Error())
 	}
