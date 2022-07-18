@@ -31,7 +31,8 @@ func main() {
 	gasPrice, _ := client.SuggestGasPrice(context.Background())
 	value := big.NewInt(2e18)
 
-	var txs []string
+	var rawTxs []string
+	// var txs []*types.Transaction
 	for i := 0; i < countWallet; i++ {
 		pk := conf.Wallet[i]
 		privateKey, fromAddress := demo.StrToPK(pk)
@@ -55,15 +56,16 @@ func main() {
 		if err != nil {
 			log.Panicln(err.Error())
 		}
+		// txs = append(txs, signedTx)
 		rawTxBytes, _ := rlp.EncodeToBytes(types.Transactions{signedTx}[0])
 		rawTxHex := hexutil.Encode(rawTxBytes)
 
-		txs = append(txs, rawTxHex)
-
+		rawTxs = append(rawTxs, rawTxHex)
 	}
 
 	// send puissant tx
-	res, err := client.SendPuissant(context.Background(), txs, time.Now().Unix()+60, nil)
+	res, err := client.SendPuissant(context.Background(), rawTxs, time.Now().Unix()+60, nil)
+	// res, err := client.SendPuissantTxs(context.Background(), txs, time.Now().Unix()+60, nil)
 	if err != nil {
 		log.Panicln(err.Error())
 	}

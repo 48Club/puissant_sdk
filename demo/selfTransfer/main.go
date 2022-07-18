@@ -39,21 +39,24 @@ func main() {
 	gasLimit := uint64(21000)
 	gasPrice, _ := client.SuggestGasPrice(context.Background())
 
-	var txs []string
+	var rawTxs []string
+	// var txs []*types.Transaction
 	for k := range make([]int, 10) {
 		tx := types.NewTransaction(nonce+uint64(k), fromAddress, value, gasLimit, gasPrice, nil)
 		signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 		if err != nil {
 			log.Panicln(err.Error())
 		}
+		// txs = append(txs, signedTx)
 		rawTxBytes, _ := rlp.EncodeToBytes(types.Transactions{signedTx}[0])
 		rawTxHex := hexutil.Encode(rawTxBytes)
 
-		txs = append(txs, rawTxHex)
+		rawTxs = append(rawTxs, rawTxHex)
 	}
 
 	// send puissant tx
-	res, err := client.SendPuissant(context.Background(), txs, time.Now().Unix()+60, nil)
+	res, err := client.SendPuissant(context.Background(), rawTxs, time.Now().Unix()+60, nil)
+	// res, err := client.SendPuissantTxs(context.Background(), txs, time.Now().Unix()+60, nil)
 	if err != nil {
 		log.Panicln(err.Error())
 	}
