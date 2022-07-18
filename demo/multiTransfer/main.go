@@ -14,7 +14,6 @@ import (
 )
 
 func main() {
-
 	conf := demo.GetConf("config.yaml")
 
 	client, err := bnb48.Dial("https://testnet-fonce-bsc.bnb48.club", "https://testnet-fonce-bsc.bnb48.club")
@@ -28,20 +27,30 @@ func main() {
 	}
 	log.Printf("chainID: %s", chainID.String())
 
-	privateKey, fromAddress := demo.StrToPK(conf.Wallet[0])
-
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
-	if err != nil {
-		log.Panicln(err.Error())
-	}
-
-	value := big.NewInt(2e18)
-	gasLimit := uint64(21000)
+	countWallet := len(conf.Wallet)
 	gasPrice, _ := client.SuggestGasPrice(context.Background())
+	value := big.NewInt(2e18)
 
 	var txs []string
-	for k := range make([]int, 10) {
-		tx := types.NewTransaction(nonce+uint64(k), fromAddress, value, gasLimit, gasPrice, nil)
+	for i := 0; i < countWallet; i++ {
+		pk := conf.Wallet[i]
+		privateKey, fromAddress := demo.StrToPK(pk)
+		nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+		if err != nil {
+			log.Panicln(err.Error())
+		}
+
+		gasLimit := uint64(21000)
+		toPk := conf.Wallet[0]
+		if i < countWallet-1 {
+			toPk = conf.Wallet[i+1]
+		}
+		_, toAddress := demo.StrToPK(toPk)
+		// gas sort
+		thisGas := big.NewInt(0).Add(big.NewInt(int64(countWallet-i)), gasPrice)
+		tx := types.NewTransaction(nonce, toAddress, value, gasLimit, thisGas, nil)
+		// change next value
+		value.Sub(value, thisGas.Mul(thisGas, big.NewInt(int64(gasLimit))))
 		signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 		if err != nil {
 			log.Panicln(err.Error())
@@ -50,6 +59,7 @@ func main() {
 		rawTxHex := hexutil.Encode(rawTxBytes)
 
 		txs = append(txs, rawTxHex)
+
 	}
 
 	// send puissant tx
