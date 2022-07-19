@@ -1,4 +1,4 @@
-# puissant_demo
+# puissant_sdk
 
 ## Usage SDK
 
@@ -55,7 +55,7 @@ wallet:
 
 #### send puissant txs
 ```bash
-> git clone https://github.com/bnb48club/puissant_sdk.git && cd puissant_demo
+> git clone https://github.com/bnb48club/puissant_sdk.git && cd puissant_sdk
 > go run github.com/bnb48club/puissant_sdk/demo/selfTransfer
 ```
 
@@ -75,6 +75,6 @@ wallet:
 
 #### send puissant txs
 ```bash
-> git clone https://github.com/bnb48club/puissant_sdk.git && cd puissant_demo
+> git clone https://github.com/bnb48club/puissant_sdk.git && cd puissant_sdk
 > go run github.com/bnb48club/puissant_sdk/demo/multiTransfer
 ```
