@@ -5,13 +5,13 @@
 ### get package
 
 ```bash
-> go get github.com/du5/puissant_demo/bnb48.sdk
+> go get github.com/bnb48club/puissant_sdk/bnb48.sdk
 ```
 
 ### import package
 
 ```go
-import "github.com/du5/puissant_demo/bnb48.sdk"
+import "github.com/bnb48club/puissant_sdk/bnb48.sdk"
 ```
 
 ### example
@@ -23,7 +23,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/du5/puissant_demo/bnb48.sdk"
+	"github.com/bnb48club/puissant_sdk/bnb48.sdk"
 )
 
 func main() {
@@ -55,8 +55,8 @@ wallet:
 
 #### send puissant txs
 ```bash
-> git clone https://github.com/du5/puissant_demo.git && cd puissant_demo
-> go run github.com/du5/puissant_demo/demo/selfTransfer
+> git clone https://github.com/bnb48club/puissant_sdk.git && cd puissant_demo
+> go run github.com/bnb48club/puissant_sdk/demo/selfTransfer
 ```
 
 ### test demo multiTransfer
@@ -75,6 +75,6 @@ wallet:
 
 #### send puissant txs
 ```bash
-> git clone https://github.com/du5/puissant_demo.git && cd puissant_demo
-> go run github.com/du5/puissant_demo/demo/multiTransfer
+> git clone https://github.com/bnb48club/puissant_sdk.git && cd puissant_demo
+> go run github.com/bnb48club/puissant_sdk/demo/multiTransfer
 ```

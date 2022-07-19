@@ -82,7 +82,7 @@ func (ec *Client) SendPuissantTxs(ctx context.Context, txs []*types.Transaction,
 	signedRawTxs := make([][]string, 2)
 	for k, signedTxs := range [][]*types.Transaction{txs, acceptReverting} {
 		for _, signedTx := range signedTxs {
-			rawTxBytes, err := rlp.EncodeToBytes(types.Transactions{signedTx}[0])
+			rawTxBytes, err := rlp.EncodeToBytes(signedTx)
 			if err != nil {
 				return nil, err
 			}

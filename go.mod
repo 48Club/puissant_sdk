@@ -1,4 +1,4 @@
-module github.com/du5/puissant_demo
+module github.com/bnb48club/puissant_sdk
 
 go 1.18
 

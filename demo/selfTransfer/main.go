@@ -6,8 +6,8 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/du5/puissant_demo/bnb48.sdk"
-	"github.com/du5/puissant_demo/demo"
+	"github.com/bnb48club/puissant_sdk/bnb48.sdk"
+	"github.com/bnb48club/puissant_sdk/demo"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/rlp"
@@ -48,7 +48,7 @@ func main() {
 			log.Panicln(err.Error())
 		}
 		// txs = append(txs, signedTx)
-		rawTxBytes, _ := rlp.EncodeToBytes(types.Transactions{signedTx}[0])
+		rawTxBytes, _ := rlp.EncodeToBytes(signedTx)
 		rawTxHex := hexutil.Encode(rawTxBytes)
 
 		rawTxs = append(rawTxs, rawTxHex)
