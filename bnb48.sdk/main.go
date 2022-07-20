@@ -4,7 +4,6 @@ import (
 	"context"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -14,7 +13,7 @@ import (
 
 // Client defines typed wrappers for the Ethereum RPC API.
 type Client struct {
-	c        *rpc.Client
+	General  *ethclient.Client
 	puissant *rpc.Client
 }
 
@@ -37,39 +36,28 @@ func DialContext(ctx context.Context, rpcs ...string) (*Client, error) {
 
 func NewClient(cs ...*rpc.Client) *Client {
 	return &Client{
-		c:        cs[0],
+		General:  ethclient.NewClient(cs[0]),
 		puissant: cs[1],
 	}
 }
 
 func (ec *Client) Close() {
-	ec.c.Close()
+	ec.General.Close()
 	ec.puissant.Close()
-}
-
-func (ec *Client) ChainID(ctx context.Context) (*big.Int, error) {
-	return ethclient.NewClient(ec.c).ChainID(ctx)
 }
 
 func (ec *Client) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
 	return ethclient.NewClient(ec.puissant).SuggestGasPrice(ctx)
 }
 
-func (ec *Client) SendTransaction(ctx context.Context, tx *types.Transaction) error {
-	return ethclient.NewClient(ec.c).SendTransaction(ctx, tx)
-}
-
-func (ec *Client) PendingNonceAt(ctx context.Context, account common.Address) (uint64, error) {
-	return ethclient.NewClient(ec.c).PendingNonceAt(ctx, account)
-}
-
 type SendPuissantArgs struct {
-	Txs             []string `json:"txs"`
-	MaxTimestamp    int64    `json:"maxTimestamp"`
-	AcceptReverting []string `json:"acceptReverting"`
+	Txs             []hexutil.Bytes `json:"txs"`
+	MaxTimestamp    uint64          `json:"maxTimestamp"`
+	AcceptReverting []hexutil.Bytes `json:"acceptReverting"`
 }
 
-func (ec *Client) SendPuissant(ctx context.Context, txs []string, maxTimestamp int64, acceptReverting []string) (res interface{}, err error) {
+func (ec *Client) SendPuissant(ctx context.Context, txs []hexutil.Bytes, maxTimestamp uint64, acceptReverting []hexutil.Bytes) (res interface{}, err error) {
+
 	err = ec.puissant.CallContext(ctx, &res, "eth_sendPuissant", SendPuissantArgs{
 		Txs:             txs,
 		MaxTimestamp:    maxTimestamp,
@@ -78,15 +66,15 @@ func (ec *Client) SendPuissant(ctx context.Context, txs []string, maxTimestamp i
 	return
 }
 
-func (ec *Client) SendPuissantTxs(ctx context.Context, txs []*types.Transaction, maxTimestamp int64, acceptReverting []*types.Transaction) (interface{}, error) {
-	signedRawTxs := make([][]string, 2)
+func (ec *Client) SendPuissantTxs(ctx context.Context, txs []*types.Transaction, maxTimestamp uint64, acceptReverting []*types.Transaction) (interface{}, error) {
+	signedRawTxs := make([][]hexutil.Bytes, 2)
 	for k, signedTxs := range [][]*types.Transaction{txs, acceptReverting} {
 		for _, signedTx := range signedTxs {
 			rawTxBytes, err := rlp.EncodeToBytes(signedTx)
 			if err != nil {
 				return nil, err
 			}
-			signedRawTxs[k] = append(signedRawTxs[k], hexutil.Encode(rawTxBytes))
+			signedRawTxs[k] = append(signedRawTxs[k], rawTxBytes)
 		}
 	}
 

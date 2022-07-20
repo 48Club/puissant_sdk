@@ -22,7 +22,7 @@ func main() {
 		log.Panicln(err.Error())
 	}
 
-	chainID, err := client.ChainID(context.Background())
+	chainID, err := client.General.ChainID(context.Background())
 	if err != nil {
 		log.Panicln(err.Error())
 	}
@@ -30,16 +30,17 @@ func main() {
 
 	privateKey, fromAddress := demo.StrToPK(conf.Wallet[0])
 
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	nonce, err := client.General.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
 		log.Panicln(err.Error())
 	}
 
 	value := big.NewInt(2e18)
 	gasLimit := uint64(21000)
+
 	gasPrice, _ := client.SuggestGasPrice(context.Background())
 
-	var rawTxs []string
+	var rawTxs []hexutil.Bytes
 	// var txs []*types.Transaction
 	for k := range make([]int, 10) {
 		tx := types.NewTransaction(nonce+uint64(k), fromAddress, value, gasLimit, gasPrice, nil)
@@ -49,13 +50,12 @@ func main() {
 		}
 		// txs = append(txs, signedTx)
 		rawTxBytes, _ := rlp.EncodeToBytes(signedTx)
-		rawTxHex := hexutil.Encode(rawTxBytes)
 
-		rawTxs = append(rawTxs, rawTxHex)
+		rawTxs = append(rawTxs, rawTxBytes)
 	}
 
 	// send puissant tx
-	res, err := client.SendPuissant(context.Background(), rawTxs, time.Now().Unix()+60, nil)
+	res, err := client.SendPuissant(context.Background(), rawTxs, uint64(time.Now().Unix()+60), nil)
 	// res, err := client.SendPuissantTxs(context.Background(), txs, time.Now().Unix()+60, nil)
 	if err != nil {
 		log.Panicln(err.Error())
