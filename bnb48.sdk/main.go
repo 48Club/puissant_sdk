@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -53,11 +54,10 @@ func (ec *Client) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
 type SendPuissantArgs struct {
 	Txs             []hexutil.Bytes `json:"txs"`
 	MaxTimestamp    uint64          `json:"maxTimestamp"`
-	AcceptReverting []hexutil.Bytes `json:"acceptReverting"`
+	AcceptReverting []common.Hash   `json:"acceptReverting"`
 }
 
-func (ec *Client) SendPuissant(ctx context.Context, txs []hexutil.Bytes, maxTimestamp uint64, acceptReverting []hexutil.Bytes) (res interface{}, err error) {
-
+func (ec *Client) SendPuissant(ctx context.Context, txs []hexutil.Bytes, maxTimestamp uint64, acceptReverting []common.Hash) (res interface{}, err error) {
 	err = ec.puissant.CallContext(ctx, &res, "eth_sendPuissant", SendPuissantArgs{
 		Txs:             txs,
 		MaxTimestamp:    maxTimestamp,
@@ -67,18 +67,21 @@ func (ec *Client) SendPuissant(ctx context.Context, txs []hexutil.Bytes, maxTime
 }
 
 func (ec *Client) SendPuissantTxs(ctx context.Context, txs []*types.Transaction, maxTimestamp uint64, acceptReverting []*types.Transaction) (interface{}, error) {
-	signedRawTxs := make([][]hexutil.Bytes, 2)
-	for k, signedTxs := range [][]*types.Transaction{txs, acceptReverting} {
-		for _, signedTx := range signedTxs {
-			rawTxBytes, err := rlp.EncodeToBytes(signedTx)
-			if err != nil {
-				return nil, err
-			}
-			signedRawTxs[k] = append(signedRawTxs[k], rawTxBytes)
+	txsBytes := []hexutil.Bytes{}
+	for _, signedTx := range txs {
+		rawTxBytes, err := rlp.EncodeToBytes(signedTx)
+		if err != nil {
+			return nil, err
 		}
+		txsBytes = append(txsBytes, rawTxBytes)
 	}
 
-	return ec.SendPuissant(ctx, signedRawTxs[0], maxTimestamp, signedRawTxs[1])
+	txsHash := []common.Hash{}
+	for _, v := range acceptReverting {
+		txsHash = append(txsHash, v.Hash())
+	}
+
+	return ec.SendPuissant(ctx, txsBytes, maxTimestamp, txsHash)
 }
 
 func (ec *Client) SendPrivateRawTransaction(ctx context.Context, tx *types.Transaction) error {
