@@ -29,7 +29,7 @@ func main() {
 
 	countWallet := len(conf.Wallet)
 	gasPrice, _ := client.SuggestGasPrice(context.Background())
-	value := big.NewInt(2e18)
+	value := big.NewInt(1e17)
 
 	var rawTxs []hexutil.Bytes
 	// var txs []*types.Transaction

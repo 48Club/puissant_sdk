@@ -35,14 +35,14 @@ func main() {
 		log.Panicln(err.Error())
 	}
 
-	value := big.NewInt(2e18)
+	value := big.NewInt(1e17)
 	gasLimit := uint64(21000)
 
 	gasPrice, _ := client.SuggestGasPrice(context.Background())
 
 	var rawTxs []hexutil.Bytes
 	// var txs []*types.Transaction
-	for k := range make([]int, 10) {
+	for k := range make([]int, 2) {
 		tx := types.NewTransaction(nonce+uint64(k), fromAddress, value, gasLimit, gasPrice, nil)
 		signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 		if err != nil {
