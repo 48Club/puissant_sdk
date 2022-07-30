@@ -57,7 +57,7 @@ type SendPuissantArgs struct {
 	AcceptReverting []common.Hash   `json:"acceptReverting"`
 }
 
-func (ec *Client) SendPuissant(ctx context.Context, txs []hexutil.Bytes, maxTimestamp uint64, acceptReverting []common.Hash) (res interface{}, err error) {
+func (ec *Client) SendPuissant(ctx context.Context, txs []hexutil.Bytes, maxTimestamp uint64, acceptReverting []common.Hash) (res string, err error) {
 	err = ec.puissant.CallContext(ctx, &res, "eth_sendPuissant", SendPuissantArgs{
 		Txs:             txs,
 		MaxTimestamp:    maxTimestamp,
@@ -66,12 +66,13 @@ func (ec *Client) SendPuissant(ctx context.Context, txs []hexutil.Bytes, maxTime
 	return
 }
 
-func (ec *Client) SendPuissantTxs(ctx context.Context, txs []*types.Transaction, maxTimestamp uint64, acceptReverting []*types.Transaction) (interface{}, error) {
+func (ec *Client) SendPuissantTxs(ctx context.Context, txs []*types.Transaction, maxTimestamp uint64, acceptReverting []*types.Transaction) (res string, err error) {
 	txsBytes := []hexutil.Bytes{}
 	for _, signedTx := range txs {
-		rawTxBytes, err := rlp.EncodeToBytes(signedTx)
+		var rawTxBytes hexutil.Bytes
+		rawTxBytes, err = rlp.EncodeToBytes(signedTx)
 		if err != nil {
-			return nil, err
+			return
 		}
 		txsBytes = append(txsBytes, rawTxBytes)
 	}

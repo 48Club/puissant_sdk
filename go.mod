@@ -3,7 +3,7 @@ module github.com/bnb48club/puissant_sdk
 go 1.18
 
 require (
-	github.com/ethereum/go-ethereum v1.10.20
+	github.com/ethereum/go-ethereum v1.10.21
 	gopkg.in/yaml.v2 v2.4.0
 )
 
