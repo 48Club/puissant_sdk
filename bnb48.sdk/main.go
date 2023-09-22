@@ -8,7 +8,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
@@ -70,7 +69,7 @@ func (ec *Client) SendPuissantTxs(ctx context.Context, txs []*types.Transaction,
 	txsBytes := []hexutil.Bytes{}
 	for _, signedTx := range txs {
 		var rawTxBytes hexutil.Bytes
-		rawTxBytes, err = rlp.EncodeToBytes(signedTx)
+		rawTxBytes, err = signedTx.MarshalBinary()
 		if err != nil {
 			return
 		}
@@ -85,10 +84,11 @@ func (ec *Client) SendPuissantTxs(ctx context.Context, txs []*types.Transaction,
 	return ec.SendPuissant(ctx, txsBytes, maxTimestamp, txsHash)
 }
 
-func (ec *Client) SendPrivateRawTransaction(ctx context.Context, tx *types.Transaction) error {
+func (ec *Client) SendPrivateRawTransaction(ctx context.Context, tx *types.Transaction) (h common.Hash, err error) {
 	data, err := tx.MarshalBinary()
 	if err != nil {
-		return err
+		return
 	}
-	return ec.puissant.CallContext(ctx, nil, "eth_sendPrivateRawTransaction", hexutil.Encode(data))
+	err = ec.puissant.CallContext(ctx, &h, "eth_sendPrivateRawTransaction", hexutil.Encode(data))
+	return
 }

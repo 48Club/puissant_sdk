@@ -1,6 +1,6 @@
 module github.com/bnb48club/puissant_sdk
 
-go 1.18
+go 1.20
 
 require (
 	github.com/ethereum/go-ethereum v1.10.21

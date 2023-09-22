@@ -5,7 +5,7 @@
 ### get package
 
 ```bash
-> go get github.com/bnb48club/puissant_sdk/bnb48.sdk
+> go get -u github.com/bnb48club/puissant_sdk/bnb48.sdk
 ```
 
 ### import package
@@ -41,7 +41,7 @@ func main() {
 ```
 ## demo require
 
-- bsc testnet account balance is greater than 0.1 tbnb
+- bsc mainnet account balance is greater than 0.1 tbnb
 
 ### test demo selfTransfer
 

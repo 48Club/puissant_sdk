@@ -6,7 +6,6 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/bnb48club/puissant_sdk/bnb48.sdk"
 	"github.com/bnb48club/puissant_sdk/demo"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -14,12 +13,7 @@ import (
 )
 
 func main() {
-	conf := demo.GetConf("config.yaml")
-
-	client, err := bnb48.Dial("https://testnet-fonce-bsc.bnb48.club", "https://testnet-puissant-bsc.bnb48.club")
-	if err != nil {
-		log.Panicln(err.Error())
-	}
+	conf, client := demo.GetClient()
 
 	chainID, err := client.General.ChainID(context.Background())
 	if err != nil {
